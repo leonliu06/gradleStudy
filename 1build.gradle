@@ -74,8 +74,23 @@ task taskY{
 	}
 }
 
-// 另一种方法来添加任务依赖，它就是通过使用闭包。
+task task1 << {
+	println 'compiling source #1'
+}
 
+task task2(dependsOn: task1) << {
+	println 'compiling unit tests #2'
+}
+
+task task3(dependsOn: [task1, task2]) << {
+	println 'running unit tests #3'
+}
+
+task task4(dependsOn: [task1, task3]) << {
+	println 'building the distribution #4'
+}
+
+// 另一种方法来添加任务依赖，它就是通过使用闭包。
 task taskXLib {
 	doLast{
 		println 'taskXLib'
@@ -137,3 +152,40 @@ task myTask(dependsOn: 'compile'){
 	}
 }
 
+// 插件
+/*
+* Gradle中有两种类型的插件：脚本插件和二进制插件。
+* 脚本插件是一个额外的构建脚本，它提供了一种声明性方法来操作构建，通常在构建中使用。
+* 二进制插件是实现插件接口并采用编程方法来操作构建的类。二进制插件可以驻留在插件JAR中的一个构建脚本和项目层次结构或外部。
+* */
+apply plugin: 'java'
+
+repositories{
+	mavenCentral()
+}
+
+// 编写自定义插件
+// 一个简单的hello插件
+apply plugin: HelloPlugin
+
+class HelloPlugin implements Plugin<Project> {
+	void apply(Project project){
+		project.task('hello') {
+			doLast {
+				println "Hello from the HelloPlugin."
+			}
+		}
+	}
+}
+
+// 依赖
+/*
+* 声明依赖关系
+* Gradle遵循一些特殊语法来定义依赖关系。
+* 以下脚本定义了两个依赖项，一个是Hibernate core 3.6.7，第二个是Junit 4.0和更高版本。
+* 如下面的代码所示，可在build.gradle文件中使用此代码。
+* */
+dependencies{
+	compile group: 'org.hibernate', name: 'hibernate-core', version: '3.6.7.Final'
+	testCompile group: 'junit', name: 'junit', version: '4.+'
+}
