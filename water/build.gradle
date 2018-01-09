@@ -1,0 +1,21 @@
+
+/*
+* 注意两个代码片段引用“hello”任务。 
+* 第一个，它使用“task”关键字，构建任务并提供它的基本配置。
+* 第二部分不使用“task”关键字，因为它进一步配置现有的“hello”任务。
+* 只能在项目中构建一次任务，但可以添加任意数量的代码块以提供其他配置。
+*/
+allprojects {
+    task hello << {task -> println "I'm $task.project.name" }
+}
+subprojects {
+    hello << {println "- I depend on water"}
+}
+
+// Project API提供了一个名称为`project()`的方法，它将一个路径作为参数，并返回此路径的`Project`对象。
+// 通常把项目特定的行为放入这个项目的构建脚本中
+/*
+project(':bluewhale').hello << {
+	println "- I'm the largest animal that has ever lived on this planet."
+}
+*/
